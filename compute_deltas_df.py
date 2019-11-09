@@ -68,17 +68,16 @@ def count_changes_in_feature(month_to_dataframe_dict:Mapping[str, pd.DataFrame],
     deltas_df.columns = new_column_names
     return deltas_df
 
-def get_deltas_df(months_to_consider:List[str], data_folder_path:str="data") -> pd.DataFrame:
+def get_deltas_df(months_to_consider:List[str], data_folder_path:str="data", must_have_substring:str="cleaned_") -> pd.DataFrame:
     """
     """
-    dict_of_dfs = compile_datasets(data_folder_path, must_have_substring="dummy")
+    dict_of_dfs = compile_datasets(data_folder_path, must_have_substring=must_have_substring)
     return count_changes_in_feature(dict_of_dfs, months_to_consider)
 
 if __name__ == "__main__":
     months_to_test = [
-        "dummytest1.txt",
-        "dummytest2.txt",
-        "dummytest3.txt"
+        "cleaned_01-2018.txt",
+        "cleaned_02-2018.txt",
+        "cleaned_03-2018.txt"
     ]
-    res = get_deltas_df(months_to_test, data_folder_path=r"data/test")
-    breakpoint()
+    res = get_deltas_df(months_to_test, data_folder_path=r"data")
