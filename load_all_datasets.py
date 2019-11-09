@@ -4,7 +4,7 @@ import os
 # external dependencies
 import pandas as pd 
 
-def compile_datasets(data_dir:str=None):
+def compile_datasets(data_dir:str=None, must_have_substring:str="cleaned_"):
     """
     Loads and saves all the text files containing
     'cleaned_', but not ".zip".
@@ -13,6 +13,8 @@ def compile_datasets(data_dir:str=None):
         data_dir:   optional string path to the data directory.
                     defaults to None, which gets replaced by the current 
                     directory.
+        must_have_substring:    optional string that all files to load must contain.
+                                defaults to "cleaned_"
     ----------
     Returns:
         dataset_data:   dictionary of (filename: pandas.DataFrame) (key:value) 
@@ -37,7 +39,7 @@ def compile_datasets(data_dir:str=None):
         if ".zip" in diritem: continue
         
         # only consider files that have "cleaned_" and ".txt" in their name
-        elif "cleaned_" in diritem and ".txt" in diritem:
+        elif must_have_substring in diritem and ".txt" in diritem:
 
             # load the contents of the file
             df = pd.read_csv(
