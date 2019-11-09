@@ -22,6 +22,8 @@ def count_changes_in_feature(month_to_dataframe_dict:Mapping[str, pd.DataFrame],
         columns=month_to_dataframe_dict[months_to_consider[0]].columns.tolist() + ["Number of Months"]
     )
 
+    deltas_df.iloc[:,-1] = 1
+
     last_month_df = month_to_dataframe_dict[months_to_consider[0]]
 
     for month in tqdm(months_to_consider[1:]):
@@ -39,10 +41,7 @@ def count_changes_in_feature(month_to_dataframe_dict:Mapping[str, pd.DataFrame],
         comparison_df = subdf_for_this_month_to_compare != last_month_df.loc[common_patient_ids]
         comparison_df["Number of Months"] = 0
         deltas_df += comparison_df.astype(int)
-        #for patient_id in common_patient_ids:
-        #    changes = ~( last_month_df.loc[patient_id] == dataframe_for_this_month.loc[patient_id] )
-        #    deltas_df.loc[patient_id] -= changes.astype(int)
-        
+
         # find patients which need to be added
         new_patients = [
             patient_id for patient_id in dataframe_for_this_month.index
@@ -65,6 +64,8 @@ def count_changes_in_feature(month_to_dataframe_dict:Mapping[str, pd.DataFrame],
         # update last_month_df to be this month's df 
         last_month_df = dataframe_for_this_month
 
+    new_column_names = [ f"delta_{colname}" for colname in deltas_df.columns ]
+    deltas_df.columns = new_column_names
     return deltas_df
 
 def get_deltas_df(months_to_consider:List[str], data_folder_path:str="data") -> pd.DataFrame:
