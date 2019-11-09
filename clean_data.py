@@ -57,7 +57,7 @@ def clean_data(dataframe:pd.DataFrame, ordinalEncoder, columns_to_encode:List[st
     # manually cleaning leftover columns
 
     # convert age ranges into integers (e.g. 50-59 -> 5, 60-69 -> 6)
-    cleaned_df["Age Range"] = [ int(age_range[0]) for age_range in dataframe["Age Range"] ]
+    cleaned_df["Age Range"] = [ int(age_range.split("-")[0]) for age_range in dataframe["Age Range"] ]
     
     # convert things like "Day_42198" into integers by keeping only numbers (e.g. "Day_42198" -> 42198)
     # "Unknown/Never Completed" gets replaced by 0
