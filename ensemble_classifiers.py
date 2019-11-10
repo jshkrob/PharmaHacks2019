@@ -61,9 +61,10 @@ def train_and_eval_ensemble_classifier(clf, X_train:np.ndarray, y_train:np.ndarr
 
     if return_baseline_cm:
         y_train_dist = Counter(y_train)
-
+        y_train_dist = [ (label, freq) for label, freq in y_train_dist.items() ]
+        y_train_dist.sort(key=lambda x:x[0])
         distribution_array = np.zeros((len(y_train_dist,))).astype(float)
-        for e,freq in enumerate(y_train_dist):
+        for e,freq in enumerate(y_train_dist.values()):
             distribution_array[e] = freq
         distribution_array /= distribution_array.sum()
 
@@ -73,7 +74,7 @@ def train_and_eval_ensemble_classifier(clf, X_train:np.ndarray, y_train:np.ndarr
             replace=True,
             p=distribution_array
         )
-        baseline_conf_matrix = confusion_matrix(y_val, random_predictions)
+        baseline_conf_matrix = confusion_matrix(y_val, random_predictions, labels=labels)
 
         return {
             "Model Confusion Matrix": conf_matrix,
