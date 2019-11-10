@@ -64,7 +64,7 @@ def train_and_eval_ensemble_classifier(clf, X_train:np.ndarray, y_train:np.ndarr
         y_train_dist = [ (label, freq) for label, freq in y_train_dist.items() ]
         y_train_dist.sort(key=lambda x:x[0])
         distribution_array = np.zeros((len(y_train_dist,))).astype(float)
-        for e,freq in enumerate(y_train_dist.values()):
+        for e,freq in y_train_dist:
             distribution_array[e] = freq
         distribution_array /= distribution_array.sum()
 
