@@ -112,7 +112,7 @@ def NB_classifier(X_train:np.ndarray, y_train:np.ndarray, X_val:np.ndarray,
     nb_clf = BernoulliNB()
     nb_clf.fit(X_train, y_train)
     return train_and_eval_ensemble_classifier(
-        clf,
+        nb_clf,
         X_train, 
         y_train, 
         X_val, 
