@@ -90,7 +90,7 @@ def train_and_eval_ensemble_classifier(clf, X_train:np.ndarray, y_train:np.ndarr
         }
 
 def NB_classifier(X_train:np.ndarray, y_train:np.ndarray, X_val:np.ndarray,
-                    y_val:np.ndarray, onehotencode:bool=True, return_baseline_cm:bool=True):
+                    y_val:np.ndarray, labels, onehotencode:bool=True, return_baseline_cm:bool=True):
     """
     """
     if onehotencode:
@@ -117,5 +117,6 @@ def NB_classifier(X_train:np.ndarray, y_train:np.ndarray, X_val:np.ndarray,
         y_train, 
         X_val, 
         y_val,
+        labels,
         return_baseline_cm=return_baseline_cm
     )
