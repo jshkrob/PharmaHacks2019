@@ -59,9 +59,10 @@ def train_and_eval_ensemble_classifier(clf, X_train:np.ndarray, y_train:np.ndarr
 
     if return_baseline_cm:
         y_train_dist = Counter(y_train)
+
         distribution_array = np.zeros((len(y_train_dist,))).astype(float)
-        for label, freq in y_train_dist.items():
-            distribution_array[label] = freq
+        for e,freq in enumerate(y_train_dist):
+            distribution_array[e] = freq
         distribution_array /= distribution_array.sum()
 
         random_predictions = np.random.choice(
@@ -85,7 +86,6 @@ def train_and_eval_ensemble_classifier(clf, X_train:np.ndarray, y_train:np.ndarr
             "Model Accuracy": conf_matrix.trace()/conf_matrix.sum(),
             "Classifier": clf
         }
-
 
 def NB_classifier(X_train:np.ndarray, y_train:np.ndarray, X_val:np.ndarray,
                     y_val:np.ndarray, onehotencode:bool=True, return_baseline_cm:bool=True):
