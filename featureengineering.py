@@ -21,3 +21,20 @@ def add_features(list_of_dfs):
     return list_of_dfs
 
 
+def dosagefrequencyindex(list_of_dfs):
+    for index, df in enumerate(list_of_dfs):
+        df["DosageFrequencyIndex"] = 3*df["Dosage"] + df["Frequency"]
+        list_of_dfs[index] = df
+        
+    return list_of_dfs
+
+def testingdosagefrequencyindex():
+    dic = compile_datasets("data")
+    df = dic["cleaned_09-2018.txt"]
+    testdflist = dosagefrequencyindex([df])
+    print(testdflist[0][["Dosage", "Frequency", "DosageFrequencyIndex"]].head())
+
+
+if __name__ == "__main__":
+    testingdosagefrequencyindex()
+
