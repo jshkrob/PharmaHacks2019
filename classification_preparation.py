@@ -144,8 +144,8 @@ def split_into_training_validating_testing( X:pd.DataFrame,
         )
         all_split_dicts = []
         for train_index, validation_index in sss.split(X_train_val_data, y_train_val_data):
-            X_train, X_val = X[train_index], X[validation_index]
-            y_train, y_val = y[train_index], y[validation_index]
+            X_train, X_val = X.values[train_index,:], X.values[validation_index,:]
+            y_train, y_val = y.values[train_index], y.values[validation_index]
             # print(Counter(y_train), '\n', Counter(y_test))
             all_split_dicts.append( {
                 "X train": X_train,
