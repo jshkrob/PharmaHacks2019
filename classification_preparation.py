@@ -142,18 +142,20 @@ def split_into_training_validating_testing( X:pd.DataFrame,
             test_size=(train_fraction - (train_fraction*validation_fraction)), 
             random_state=random_state
         )
+        all_split_dicts = []
         for train_index, validation_index in sss.split(X_train_val_data, y_train_val_data):
             X_train, X_val = X[train_index], X[validation_index]
             y_train, y_val = y[train_index], y[validation_index]
             # print(Counter(y_train), '\n', Counter(y_test))
-            yield {
+            all_split_dicts.append( {
                 "X train": X_train,
                 "X validate": X_val,
                 "X test": X_test_data,
                 "y train": y_train,
                 "y validate": y_val,
                 "y test": y_test_data
-            }
+            } )
+        return all_split_dicts
     else:
         X_train_indices, X_validation_indices, y_train_indices, y_validation_indices = train_test_split(
             np.arange(X_train_val_data.shape[0]),
@@ -177,12 +179,12 @@ def split_into_training_validating_testing( X:pd.DataFrame,
         assert X_train.shape[0] + X_val.shape[0] + X_test_data.shape[0] == X.shape[0]
         assert y_train.shape[0] + y_val.shape[0] + y_test_data.shape[0] == y.shape[0]
 
-        return {
+        return [{
             "X train": X_train,
             "X validate": X_val,
             "X test": X_test_data,
             "y train": y_train,
             "y validate": y_val,
             "y test": y_test_data
-        }
+        }]
 
