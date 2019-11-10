@@ -7,7 +7,7 @@ from sklearn.ensemble import RandomForestClassifier, GradientBoostingClassifier
 from sklearn.metrics import confusion_matrix
 
 def GB_classifier(X_train:np.ndarray, y_train:np.ndarray, X_val:np.ndarray, y_val:np.ndarray,
-                n_estimators:int=1_000, max_depth:int=5, random_state:int=42,
+                labels, n_estimators:int=1_000, max_depth:int=5, random_state:int=42,
                 return_baseline_cm:bool=False):
     """
     """
@@ -23,11 +23,12 @@ def GB_classifier(X_train:np.ndarray, y_train:np.ndarray, X_val:np.ndarray, y_va
         y_train, 
         X_val, 
         y_val,
+        labels,
         return_baseline_cm=return_baseline_cm
     )
 
 def RF_classifier(X_train:np.ndarray, y_train:np.ndarray, X_val:np.ndarray, y_val:np.ndarray,
-                n_estimators:int=1_000, max_depth:int=5, random_state:int=42,
+                labels, n_estimators:int=1_000, max_depth:int=5, random_state:int=42,
                 return_baseline_cm:bool=False):
     """
     """
@@ -43,18 +44,19 @@ def RF_classifier(X_train:np.ndarray, y_train:np.ndarray, X_val:np.ndarray, y_va
         y_train, 
         X_val, 
         y_val,
+        labels,
         return_baseline_cm=return_baseline_cm
     )
 
 def train_and_eval_ensemble_classifier(clf, X_train:np.ndarray, y_train:np.ndarray, X_val:np.ndarray, y_val:np.ndarray,
-                n_estimators:int=1_000, max_depth:int=5, random_state:int=42,
+                labels, n_estimators:int=1_000, max_depth:int=5, random_state:int=42,
                 return_baseline_cm:bool=False):
     """
     """
     
     predictions = clf.predict(X_val)
     conf_matrix = confusion_matrix(
-        y_val, predictions
+        y_val, predictions, labels=labels
     )
 
     if return_baseline_cm:
