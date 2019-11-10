@@ -7,7 +7,7 @@ import numpy as np
 import pandas as pd
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.feature_selection import SelectFromModel
-from sklearn.model_selection import train_test_split
+from sklearn.model_selection import train_test_split, StratifiedShuffleSplit
 
 # local dependencies
 from load_all_datasets import compile_datasets
@@ -103,16 +103,18 @@ def prepare_to_predict_feature(feature_name:str,
 
             y.iloc[ np.where( y == label ) ] = label_to_frequency_tuples[0][0]
 
-    training_feature_df = all_useable_data.drop(columns=[feature_name])
-    assert feature_name not in training_feature_df.columns
+    features_df = all_useable_data.drop(columns=[feature_name])
+    assert feature_name not in features_df.columns
 
-    return training_feature_df, y
+    return features_df, y
 
 def split_into_training_validating_testing( X:pd.DataFrame,
                                             y:pd.DataFrame,
                                             train_fraction:float=0.85,
                                             test_fraction:float=0.15,
                                             validation_fraction:float=0.2,
+                                            use_strat_splits:bool=False,
+                                            nsplits:int=10,
                                             random_state:int=42,
                                             verbose:bool=False):
     """
@@ -134,34 +136,53 @@ def split_into_training_validating_testing( X:pd.DataFrame,
     X_train_val_data = X.drop(X.index[X_test_indices])
     y_train_val_data = y.drop(y.index[y_test_indices])
 
-    X_train_indices, X_validation_indices, y_train_indices, y_validation_indices = train_test_split(
-        np.arange(X_train_val_data.shape[0]),
-        np.arange(y_train_val_data.shape[0]),
-        test_size=0.2,
-        random_state=42,
-        stratify=y_train_val_data
-    )
+    if use_strat_splits:
+        sss = StratifiedShuffleSplit(
+            n_splits=nsplits, 
+            test_size=(train_fraction - (train_fraction*validation_fraction)), 
+            random_state=random_state
+        )
+        for train_index, validation_index in sss.split(X_train_val_data, y_train_val_data):
+            X_train, X_val = X[train_index], X[validation_index]
+            y_train, y_val = y[train_index], y[validation_index]
+            # print(Counter(y_train), '\n', Counter(y_test))
+            yield {
+                "X train": X_train,
+                "X validate": X_val,
+                "X test": X_test_data,
+                "y train": y_train,
+                "y validate": y_val,
+                "y test": y_test_data
+            }
+    else:
+        X_train_indices, X_validation_indices, y_train_indices, y_validation_indices = train_test_split(
+            np.arange(X_train_val_data.shape[0]),
+            np.arange(y_train_val_data.shape[0]),
+            test_size=0.2,
+            random_state=42,
+            stratify=y_train_val_data
+        )
 
-    X_train = X_train_val_data.iloc[X_train_indices,:]
-    X_val = X_train_val_data.iloc[X_validation_indices,:]
-    y_train = y_train_val_data.iloc[y_train_indices]
-    y_val = y_train_val_data.iloc[y_validation_indices]
+        X_train = X_train_val_data.iloc[X_train_indices,:]
+        X_val = X_train_val_data.iloc[X_validation_indices,:]
+        y_train = y_train_val_data.iloc[y_train_indices]
+        y_val = y_train_val_data.iloc[y_validation_indices]
 
-    if verbose:
-        print(f"dimensions of testing dataset: {X_test_data.shape}, {y_test_data.shape}")
-        print(f"dimensions of validating dataset: {X_val.shape}, {y_val.shape}")
-        print(f"dimensions of training dataset: {X_train.shape}, {y_train.shape}")
-        print(f"dimensions of original dataset: {X.shape}")
+        if verbose:
+            print(f"dimensions of testing dataset: {X_test_data.shape}, {y_test_data.shape}")
+            print(f"dimensions of validating dataset: {X_val.shape}, {y_val.shape}")
+            print(f"dimensions of training dataset: {X_train.shape}, {y_train.shape}")
+            print(f"dimensions of original dataset: {X.shape}")
 
-    assert X_train.shape[0] + X_val.shape[0] + X_test_data.shape[0] == X.shape[0]
-    assert y_train.shape[0] + y_val.shape[0] + y_test_data.shape[0] == y.shape[0]
+        assert X_train.shape[0] + X_val.shape[0] + X_test_data.shape[0] == X.shape[0]
+        assert y_train.shape[0] + y_val.shape[0] + y_test_data.shape[0] == y.shape[0]
 
-    return {
-        "X train": X_train,
-        "X validate": X_val,
-        "X test": X_test_data,
-        "y train": y_train,
-        "y validate": y_val,
-        "y test": y_test_data
-    }
+        return {
+            "X train": X_train,
+            "X validate": X_val,
+            "X test": X_test_data,
+            "y train": y_train,
+            "y validate": y_val,
+            "y test": y_test_data
+        }
 
